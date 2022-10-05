@@ -13,7 +13,7 @@ namespace Server1
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
         public static TcpListener serverListener;
-        // public static SortedDictionary<int, Client> clients = new SortedDictionary<int, Client>();
+        public static SortedDictionary<int, Client> clients = new SortedDictionary<int, Client>();
 
         public static void setupServer(int _maxPlayers, int _port)
         {
@@ -22,16 +22,18 @@ namespace Server1
 
             serverListener = new TcpListener(IPAddress.Any, Port);
 
-            Console.WriteLine($"Server kuruldu! : Maxsimum oyuncu sayısı: {MaxPlayers}");
+            InitializeServerDate();
+
+            Console.WriteLine($"Server installed! : Max Player number: {MaxPlayers}");
         }
 
         public static void StartServer()
         {
             serverListener.Start();
-            Console.WriteLine($"Server başlatıldı! : {Port}'unda dinleniyor...");
+            Console.WriteLine($"Server started on port: {Port}");
 
             serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
-            Console.WriteLine("Oyuncular Bekleniyor");
+            Console.WriteLine("Waiting for players");
         }
 
         public static void AcceptClientCallBack(IAsyncResult asyncResult)
@@ -39,11 +41,29 @@ namespace Server1
 
 
             TcpClient socket = serverListener.EndAcceptTcpClient(asyncResult);
-
-            Console.WriteLine($"Bİr oyuncu içeri girdi. {socket.Client.RemoteEndPoint}");
-
             serverListener.BeginAcceptTcpClient(AcceptClientCallBack, null);
 
+            Console.WriteLine("Player joining.");
+
+            for (int i = 1; i <= clients.Count; i++)
+            {
+                if (clients[i].tcp.socket == null)
+                {
+                    clients[i].tcp.Connect(socket);
+                    return;
+                }
+            }
+            socket.Close();
+
+            Console.WriteLine("Server full");
+        }
+
+        public static void InitializeServerDate()
+        {
+            for (int i = 1; i <= MaxPlayers; i++)
+            {
+                clients.Add(i, new Client(i));
+            }
         }
     }
 }

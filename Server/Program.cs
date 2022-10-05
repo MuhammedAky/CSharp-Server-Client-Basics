@@ -10,7 +10,7 @@ namespace Server1{
     class Program{
         
         static void Main(string[] args){
-            Server.setupServer(500, 8585);
+            Server.setupServer(10, 8585);
             Server.StartServer();
 
             Console.ReadKey();

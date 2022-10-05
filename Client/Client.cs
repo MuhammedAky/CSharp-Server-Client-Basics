@@ -10,18 +10,18 @@ namespace Client1
 {
     class Client
     {
-        public static TcpClient client = new TcpClient();
+        public static TcpClient socket = new TcpClient();
 
         public static void Connect()
         {
-            client.BeginConnect(ServerSettings.HOST, ServerSettings.PORT,new AsyncCallback(ConnectCallBack) ,null);
+            socket.BeginConnect(ServerSettings.HOST, ServerSettings.PORT,new AsyncCallback(ConnectCallBack) ,null);
             Console.WriteLine("Connecting...");
         }
 
         public static void ConnectCallBack(IAsyncResult asyncResult)
         {
-            client.EndConnect(asyncResult);
-            if (client.Connected)
+            socket.EndConnect(asyncResult);
+            if (socket.Connected)
             {
                 Console.WriteLine("Connected");
             }
