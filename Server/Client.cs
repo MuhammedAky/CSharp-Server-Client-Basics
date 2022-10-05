@@ -10,6 +10,7 @@ namespace Server1
 {
     class Client
     {
+        private static int bufferSize = 4096;
         public int id;
         public TCP tcp;
 
@@ -23,6 +24,8 @@ namespace Server1
 
             public TcpClient socket;
             public readonly int id;
+            public NetworkStream stream;
+            public byte[] buffer;
 
 
             public TCP(int _id)
@@ -33,7 +36,39 @@ namespace Server1
             public void Connect(TcpClient _socket)
             {
                 socket = _socket;
+                socket.ReceiveBufferSize = bufferSize;
+                socket.SendBufferSize = bufferSize;
+
+                stream = socket.GetStream();
+                buffer = new byte[bufferSize];
+                stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack) ,null);
                 Console.WriteLine($"Connected: {id}");
+            }
+
+            public void ReceiveCallBack(IAsyncResult asyncResult)
+            {
+                try
+                {
+                    int dataLength = stream.EndRead(asyncResult);
+                    
+                    if (dataLength <= 0)
+                    {
+                        // Disconnect
+                        return;
+                    }
+
+                    byte[] _data = new byte[dataLength];
+                    Array.Copy(buffer, _data, dataLength);
+
+
+                    string receiveString = Encoding.UTF8.GetString(_data);
+                    Console.WriteLine($"Text came from {id}.Player, text: {receiveString}");
+                } catch (Exception e)
+                {
+                    // Disconnect
+                    Console.WriteLine("Error");
+                    return;
+                }
             }
         }
     }
