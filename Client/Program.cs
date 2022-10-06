@@ -14,8 +14,7 @@ namespace Client1
         {
             ServerSettings.ServerSet("127.0.0.1", 8585);
 
-            Client.Connect();
-
+            Client.Connect();     
             Console.ReadKey();
         }
     }

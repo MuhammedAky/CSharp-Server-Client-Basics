@@ -14,11 +14,16 @@ namespace Server1
         public int id;
         public TCP tcp;
 
-    public Client(int _id)
-    {
-        id = _id;
-        tcp = new TCP(id);
-    }
+        public Client(int _id)
+        {
+            id = _id;
+            tcp = new TCP(id);
+        }
+
+        public void Disconnect()
+        {
+            tcp.Disconnect();
+        }
 
         public class TCP{
 
@@ -31,6 +36,16 @@ namespace Server1
             public TCP(int _id)
             {
                 id = _id;
+            }
+
+            public void Disconnect()
+            {
+                socket.Close();
+                stream = null;
+                socket = null;
+                buffer =null;
+
+                Console.WriteLine($"{id}. Client Disconnected!");
             }
 
             public void Connect(TcpClient _socket)
@@ -53,7 +68,7 @@ namespace Server1
                     
                     if (dataLength <= 0)
                     {
-                        // Disconnect
+                        Disconnect();
                         return;
                     }
 
@@ -63,12 +78,33 @@ namespace Server1
 
                     string receiveString = Encoding.UTF8.GetString(_data);
                     Console.WriteLine($"Text came from {id}.Player, text: {receiveString}");
+
+                    stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(ReceiveCallBack), null);
                 } catch (Exception e)
                 {
                     // Disconnect
-                    Console.WriteLine("Error");
+                    Disconnect();
                     return;
                 }
+            }
+
+            public void SendDataFromJson(string _jsonData)
+            {
+                byte[] _data = Encoding.UTF8.GetBytes(_jsonData);
+
+                try
+                {
+                    stream.BeginWrite(_data, 0, _data.Length, SendCallBack, null);
+                }
+                catch (Exception ex)
+                {
+                    // Disconnect
+                }
+            }
+
+            public void SendCallBack(IAsyncResult asyncResult)
+            {
+                stream.EndWrite(asyncResult);
             }
         }
     }

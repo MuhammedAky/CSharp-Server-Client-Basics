@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using Newtonsoft.Json;
 
 namespace Server1
 {
@@ -50,8 +51,17 @@ namespace Server1
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(socket);
+
+                    Handlers.HelloPacket sendPacket = Handlers.CreateHelloPacket(clients[i].id,true ,(int)Handlers.ServerHandler.Hello, "Welcome our Server");
+                    string sendJson = JsonConvert.SerializeObject(sendPacket);
+                    clients[i].tcp.SendDataFromJson(sendJson);
                     return;
                 }
+                Client client = new Client(99999);
+                client.tcp.Connect(socket);
+                Handlers.HelloPacket sendPacket2 = Handlers.CreateHelloPacket(client.id, false, (int)Handlers.ServerHandler.Hello, "Server is full");
+                string sendJson2 = JsonConvert.SerializeObject(sendPacket2);
+                client.tcp.SendDataFromJson(sendJson2);
             }
             socket.Close();
 

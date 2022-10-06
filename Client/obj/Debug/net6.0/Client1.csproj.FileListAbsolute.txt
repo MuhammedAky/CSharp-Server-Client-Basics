@@ -27,3 +27,5 @@ C:\Users\PC\Desktop\c#\Proje\Client\obj\Debug\net6.0\Client1.dll
 C:\Users\PC\Desktop\c#\Proje\Client\obj\Debug\net6.0\ref\Client1.dll
 C:\Users\PC\Desktop\c#\Proje\Client\obj\Debug\net6.0\Client1.pdb
 C:\Users\PC\Desktop\c#\Proje\Client\obj\Debug\net6.0\Client1.genruntimeconfig.cache
+C:\Users\PC\Desktop\c#\Proje\Client\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\PC\Desktop\c#\Proje\Client\obj\Debug\net6.0\Client1.csproj.CopyComplete
